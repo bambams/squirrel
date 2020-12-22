@@ -38,11 +38,11 @@ run: game
 	${GAME}
 
 veryclean: clean
-	rm -fR ${DEPSDIR}/libal5poly
+	${MAKE} -C ${DEPSDIR}/libal5poly -f Makefile.mingw32 clean
 
-${DEPSDIR}/libal5poly:
-	git clone git://github.com/bamccaig/libal5poly.git deps/libal5poly
-	cd $@ && git remote set-url --push origin git@github.com:bamccaig/libal5poly.git && git checkout Allegro525_GCC81_MinGW_W64_i686_posix_dwarf
+#${DEPSDIR}/libal5poly:
+#	git clone git://github.com/bamccaig/libal5poly.git deps/libal5poly
+#	cd $@ && git remote set-url --push origin git@github.com:bamccaig/libal5poly.git && git checkout Allegro525_GCC81_MinGW_W64_i686_posix_dwarf
 
 ${DEPSDIR}/libal5poly/bin/libal5poly.1.dll: ${DEPSDIR}/libal5poly
 	cd $< && ${MAKE} -f Makefile.mingw32
