@@ -1,3 +1,4 @@
 [submodule "deps/libal5poly"]
-	path = deps/libal5poly
-	url = git://github.com/bambams/libal5poly.git
+    path = deps/libal5poly
+    url = git://github.com/bambams/libal5poly.git
+    branch = squirrel
