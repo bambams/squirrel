@@ -19,8 +19,7 @@ OBJECTS = ${OBJDIR}/main.o
 all: game
 
 build-deps: ${DEPSDIR}/libal5poly
-	cd $< && ${MAKE} -f Makefile.mingw32 clean
-	cd $< && ${MAKE} -f Makefile.mingw32
+	cd $< && ${MAKE} -f Makefile.mingw32 library
 
 clean:
 	${REMOVE} ${BINDIR} ${OBJDIR}
