@@ -24,18 +24,17 @@ build-deps: ${DEPSDIR}/libal5poly
 clean:
 	${REMOVE} ${BINDIR} ${OBJDIR}
 
-deepclean:
+deepclean: clean
 	-cd ${DEPSDIR}/libal5poly && ${MAKE} -f Makefile.mingw32 clean
-	${MAKE} clean
 
 dirs: ${BINDIR} ${OBJDIR}
 
 game: libal5poly ${GAME}
 
-libal5poly: ${DEPSDIR}/libal5poly/bin/libal5poly.1.dll prerequisite
+libal5poly: prerequisite ${DEPSDIR}/libal5poly/bin/libal5poly.1.dll
 
 prerequisite:
-	${MAKE} -C ${DEPSDIR}/libal5poly -f Makefile.mingw32
+	${MAKE} -C ${DEPSDIR}/libal5poly -f Makefile.mingw32 library
 
 run: game
 	${GAME}
@@ -48,7 +47,7 @@ veryclean: clean
 #	cd $@ && git remote set-url --push origin git@github.com:bamccaig/libal5poly.git && git checkout Allegro525_GCC81_MinGW_W64_i686_posix_dwarf
 
 ${DEPSDIR}/libal5poly/bin/libal5poly.1.dll: ${DEPSDIR}/libal5poly
-	cd $< && ${MAKE} -f Makefile.mingw32
+	${MAKE} -C ${DEPSDIR}/libal5poly -f Makefile.mingw32 library
 
 ${BINDIR}:
 	${MKDIR} $@
