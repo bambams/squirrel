@@ -4,7 +4,7 @@ CXX = g++
 CXXFLAGS = -g3 -Iinclude -Ideps/libal5poly/include -ID:/mingw32/i686-w64-mingw32/include -std=c++17 -Wall
 DEPSDIR = deps
 INCDIR = include
-LIBS = -LD:/mingew32/i686-w64-mingw32/lib -Ldeps/libal5poly/bin/ -llibal5poly -LD:/Users/Brandon/bin -LD:/Users/Brandon/lib -lallegro_monolith-5.2 -ljpeg -ldumb -lFLAC -lfreetype -lvorbisfile -lvorbis -logg -lphysfs -lpng16 -lzlibstatic -ldsound -lgdiplus -luuid -lkernel32 -lwinmm -lpsapi -lopengl32 -lglu32 -luser32 -lcomdlg32 -lgdi32 -lshell32 -lole32 -ladvapi32 -lws2_32 -lshlwapi -lwebp
+LIBS = -LD:/mingw32/i686-w64-mingw32/lib -Ldeps/libal5poly/bin/ -llibal5poly -LD:/Users/Brandon/bin -LD:/Users/Brandon/lib -lallegro_monolith-5.2 -ljpeg -ldumb -lFLAC -lfreetype -lvorbisfile -lvorbis -logg -lphysfs -lpng16 -lzlibstatic -ldsound -lgdiplus -luuid -lkernel32 -lwinmm -lpsapi -lopengl32 -lglu32 -luser32 -lcomdlg32 -lgdi32 -lshell32 -lole32 -ladvapi32 -lws2_32 -lshlwapi -lwebp
 MKDIR = mkdir -p
 OBJDIR = obj
 PREFIX =
