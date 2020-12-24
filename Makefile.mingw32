@@ -4,17 +4,18 @@ CXX = g++
 CXXFLAGS = -g3 -Iinclude -Ideps/libal5poly/include -ID:/mingw32/i686-w64-mingw32/include -std=c++17 -Wall
 DEPSDIR = deps
 INCDIR = include
-LIBS = -LD:/mingw32/i686-w64-mingw32/lib -Ldeps/libal5poly/bin/ -llibal5poly -LD:/Users/Brandon/bin -LD:/Users/Brandon/lib -lallegro_monolith-5.2 -ljpeg -ldumb -lFLAC -lfreetype -lvorbisfile -lvorbis -logg -lphysfs -lpng16 -lzlibstatic -ldsound -lgdiplus -luuid -lkernel32 -lwinmm -lpsapi -lopengl32 -lglu32 -luser32 -lcomdlg32 -lgdi32 -lshell32 -lole32 -ladvapi32 -lws2_32 -lshlwapi -lwebp
+LIBS = -LD:/mingw32/i686-w64-mingw32/lib -Ldeps/libal5poly/bin/ -lal5poly -LD:/Users/Brandon/bin -LD:/Users/Brandon/lib -lallegro_monolith-5.2 -ljpeg -ldumb -lFLAC -lfreetype -lvorbisfile -lvorbis -logg -lphysfs -lpng16 -lzlibstatic -ldsound -lgdiplus -luuid -lkernel32 -lwinmm -lpsapi -lopengl32 -lglu32 -luser32 -lcomdlg32 -lgdi32 -lshell32 -lole32 -ladvapi32 -lws2_32 -lshlwapi -lwebp
 MKDIR = mkdir -p
 OBJDIR = obj
 PREFIX =
 REMOVE = rm -fR
 SRCDIR = src
 
+DIRS = ${BINDIR} ${OBJDIR}
 GAME = ${BINDIR}/game.exe
 OBJECTS = ${OBJDIR}/main.o
 
-.PHONY: all build-deps clean deepclean game libal5poly prerequisite run veryclean
+.PHONY: all build-deps clean deepclean dirs game libal5poly prerequisite run veryclean ${DIRS}
 
 all: game
 
@@ -22,19 +23,19 @@ build-deps: ${DEPSDIR}/libal5poly
 	cd $< && ${MAKE} -f Makefile.mingw32 library
 
 clean:
-	${REMOVE} ${BINDIR} ${OBJDIR}
+	${REMOVE} ${DIRS}
 
 deepclean: clean
 	-cd ${DEPSDIR}/libal5poly && ${MAKE} -f Makefile.mingw32 clean
 
-dirs: ${BINDIR} ${OBJDIR}
+dirs: ${DIRS}
+	@${MKDIR} $?
 
 game: libal5poly ${GAME}
 
 libal5poly: prerequisite ${DEPSDIR}/libal5poly/bin/libal5poly.1.dll
 
-prerequisite:
-	${MAKE} -C ${DEPSDIR}/libal5poly -f Makefile.mingw32 library
+prerequisite: dirs ${DEPSDIR}/libal5poly/bin/libal5poly.1.dll
 
 run: game
 	${GAME}
@@ -49,26 +50,11 @@ veryclean: clean
 ${DEPSDIR}/libal5poly/bin/libal5poly.1.dll: ${DEPSDIR}/libal5poly
 	${MAKE} -C ${DEPSDIR}/libal5poly -f Makefile.mingw32 library
 
-${BINDIR}:
-	${MKDIR} $@
-
 ${BINDIR}/libal5poly.1.dll:
-	ln -s ../deps/libal5poly/bin/libal5poly.1.dll $@
+	if [[ -x mklink ]]; then mklink $@ ../deps/libal5poly/bin/libal5poly.1.dll; else ln -s ../deps/libal5poly/bin/libal5poly.1.dll $@; fi;
 
-${OBJDIR}:
-	${MKDIR} $@
-
-${GAME}: ${OBJECTS} ${BINDIR} ${BINDIR}/libal5poly.1.dll
+${GAME}: ${OBJECTS} ${BINDIR}/libal5poly.1.dll
 	${CXX} -o $@ ${OBJECTS} ${LIBS}
 
-${OBJDIR}/H4xDummy.o: ${SRCDIR}/H4xDummy.cpp ${INCDIR}/H4xDummy.hpp ${OBJDIR}
-	${CXX} ${CXXFLAGS} -c -o $@ $<
-
-${OBJDIR}/JumpHandler.o: ${SRCDIR}/JumpHandler.cpp ${INCDIR}/JumpHandler.hpp ${OBJDIR}
-	${CXX} ${CXXFLAGS} -c -o $@ $<
-
-${OBJDIR}/RunHandler.o: ${SRCDIR}/RunHandler.cpp ${INCDIR}/RunHandler.hpp ${OBJDIR}
-	${CXX} ${CXXFLAGS} -c -o $@ $<
-
-${OBJDIR}/main.o: ${SRCDIR}/main.cpp ${OBJDIR}
+${OBJDIR}/main.o: ${SRCDIR}/main.cpp
 	${CXX} ${CXXFLAGS} -c -o $@ $<
