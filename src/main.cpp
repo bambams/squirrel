@@ -29,10 +29,12 @@
         Mysterious Presence \
         "
 
-const int SCREEN_W = 800;
-const int SCREEN_H = 600;
-const int PLAYER_W = 50;
-const int PLAYER_H = 50;
+const int SCREEN_W = 1920;
+const int SCREEN_H = 1080;
+const int PLAYER_W = 200;
+const int PLAYER_H = 200;
+const float PLAYER_START_X = std::fabs(std::roundf(SCREEN_W / (float)2));
+const float PLAYER_START_Y = std::fabs(std::roundf(SCREEN_H / (float)2));
 const char * const PLAYER_ANIMATION_NAME = "player-animation";
 const char * const PLAYER_BITMAP_NAME = "player-bitmap";
 
@@ -74,6 +76,8 @@ int main(int argc, char ** argv) try
 
     player.setCurrentAnimation(PLAYER_ANIMATION_NAME);
     player.beginAnimation(1, *clock.getGameTime());
+    player.setX(PLAYER_START_X);
+    player.setY(PLAYER_START_Y);
 
     al_start_timer(timer.get());
 
@@ -116,8 +120,6 @@ int main(int argc, char ** argv) try
         if(tick)
         {
             inputMan.sendEvents(*clock.getGameTime());
-
-            // Expand...
         }
 
         // Drawing.
@@ -126,7 +128,18 @@ int main(int argc, char ** argv) try
             try
             {
                 renderer.render(*clock.getGameTime(), camera, player);
-                renderer.paint();
+
+                ALLEGRO_COLOR brown = assMan.createColor("squirrel-brown", 114, 63, 32, 255);
+
+                al_draw_filled_circle(200, 150, 100, brown);
+
+                //al5poly::ALLEGRO_BITMAP_Ptr bitmap = assMan.getBitmap("player-bitmap");
+
+                //al_draw_scaled_bitmap(bitmap.get(),
+                //        0, 0, al_get_bitmap_width(bitmap.get()), al_get_bitmap_height(bitmap.get()),
+                //        200, 100, SCREEN_W, SCREEN_H, 0);
+
+                renderer.paint(al_map_rgb(255, 255, 255));
             }
             catch(al5poly::IException & ex)
             {
@@ -174,11 +187,17 @@ al5poly::Player createPlayer(al5poly::AssetManager & assMan)
 
     float radius = std::fabs((PLAYER_W + PLAYER_H) / (float)2);
 
-    ALLEGRO_COLOR color = assMan.createColor("squirrel", 114, 63, 32, 240);
+    ALLEGRO_COLOR brown = assMan.createColor("squirrel-brown", 114, 63, 32, 255);
+
+    int circle_x = PLAYER_W / (float)2;
+    int circle_y = PLAYER_H / (float)2;
+
+    //fprintf(stderr, "Creating player default sprite: radius=%f, circle_x=%d, circle_y=%d\n", radius, circle_x, circle_y);
 
     ALLEGRO_BITMAP * old_target = al_get_target_bitmap();
     al_set_target_bitmap(bitmap.get());
-    al_draw_circle(SCREEN_W / (float)2, SCREEN_H / (float)2, radius, color, 1.0f);
+    //al_clear_to_color(al_map_rgb(155, 55, 255));
+    al_draw_filled_circle(0, 0, 1000, brown);
     al_set_target_bitmap(old_target);
 
     assMan.addBitmap(PLAYER_BITMAP_NAME, bitmap);
