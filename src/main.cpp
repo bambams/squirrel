@@ -6,6 +6,7 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
+#include <boost/make_shared.hpp>
 
 #include "al5poly/altypedef.hpp"
 #include "al5poly/Animation.hpp"
@@ -16,6 +17,7 @@
 #include "al5poly/IException.hpp"
 #include "al5poly/IGameTime.hpp"
 #include "al5poly/InputManager.hpp"
+#include "al5poly/LambdaInputHandler.hpp"
 #include "al5poly/Player.hpp"
 #include "al5poly/Renderer.hpp"
 
@@ -82,7 +84,24 @@ int main(int argc, char ** argv) try
     al_start_timer(timer.get());
 
     al_set_target_bitmap(al_get_backbuffer(display.get()));
-    al_clear_to_color(al_map_rgb(0, 0, 0));
+
+    ALLEGRO_COLOR bgcolor = al_map_rgb(255, 255, 255);
+    ALLEGRO_COLOR nextbgcolor = al_map_rgb(0, 0, 0);
+
+    al5poly::LambdaInputHandler::Ptr nextHandler(
+            new al5poly::LambdaInputHandler(
+                    [&bgcolor, &nextbgcolor]
+                    (const std::string &, const al5poly::IGameTime &)
+                    {
+                        ALLEGRO_COLOR next = bgcolor;
+
+                        bgcolor = nextbgcolor;
+                        nextbgcolor = next;
+                    }));
+
+    inputMan.mapKeyAction(ALLEGRO_KEY_N, "next", nextHandler);
+
+    al_clear_to_color(bgcolor);
 
     while(true)
     {
@@ -120,6 +139,10 @@ int main(int argc, char ** argv) try
         if(tick)
         {
             inputMan.sendEvents(*clock.getGameTime());
+
+            al5poly::IAnimation::Ptr playerAnimation = player.getCurrentAnimation();
+
+            //std::cerr << "Player animation is " << playerAnimation->to_string() << std::endl;
         }
 
         // Drawing.
@@ -129,9 +152,16 @@ int main(int argc, char ** argv) try
             {
                 renderer.render(*clock.getGameTime(), camera, player);
 
-                ALLEGRO_COLOR brown = assMan.createColor("squirrel-brown", 114, 63, 32, 255);
+                //ALLEGRO_COLOR brown_level2 = assMan.createColor("squirrel-brown", 114, 63, 32);
+                //ALLEGRO_COLOR brown_level1 = assMan.getColor("squirrel-brown");
+                //ALLEGRO_COLOR brown_level0 = al_map_rgb(114, 63, 32);
 
-                al_draw_filled_circle(200, 150, 100, brown);
+                //fprintf(stderr, "brown (level3): %s\n", assMan.printColor("squirrel-brown"));
+                //fprintf(stderr, "brown (level2): %s\n", assMan.printColor(brown_level2));
+                //fprintf(stderr, "brown (level1): %s\n", assMan.printColor(brown_level1));
+                //fprintf(stderr, "brown (level0): %s\n", assMan.printColor(brown_level0));
+
+                //al_draw_filled_circle(200, 150, 100, brown_level1);
 
                 //al5poly::ALLEGRO_BITMAP_Ptr bitmap = assMan.getBitmap("player-bitmap");
 
@@ -139,11 +169,11 @@ int main(int argc, char ** argv) try
                 //        0, 0, al_get_bitmap_width(bitmap.get()), al_get_bitmap_height(bitmap.get()),
                 //        200, 100, SCREEN_W, SCREEN_H, 0);
 
-                renderer.paint(al_map_rgb(255, 255, 255));
+                renderer.paint(bgcolor);
             }
             catch(al5poly::IException & ex)
             {
-                std::cerr << ex.getMessage() << std::endl;
+                std::cerr << "Unhandled exception in main loop drawing block: " << ex.getMessage() << std::endl;
             }
         }
     }
@@ -188,6 +218,7 @@ al5poly::Player createPlayer(al5poly::AssetManager & assMan)
     float radius = std::fabs((PLAYER_W + PLAYER_H) / (float)2);
 
     ALLEGRO_COLOR brown = assMan.createColor("squirrel-brown", 114, 63, 32, 255);
+    brown = al_map_rgba(114, 63, 32, 255);
 
     int circle_x = PLAYER_W / (float)2;
     int circle_y = PLAYER_H / (float)2;
@@ -196,8 +227,9 @@ al5poly::Player createPlayer(al5poly::AssetManager & assMan)
 
     ALLEGRO_BITMAP * old_target = al_get_target_bitmap();
     al_set_target_bitmap(bitmap.get());
-    //al_clear_to_color(al_map_rgb(155, 55, 255));
-    al_draw_filled_circle(0, 0, 1000, brown);
+    al_clear_to_color(AL5POLY_MAGIC_PINK);
+    al_convert_mask_to_alpha(bitmap.get(), AL5POLY_MAGIC_PINK);
+    al_draw_filled_circle(circle_x, circle_y, (PLAYER_W > PLAYER_H ? PLAYER_W : PLAYER_H) / 2, brown);
     al_set_target_bitmap(old_target);
 
     assMan.addBitmap(PLAYER_BITMAP_NAME, bitmap);
